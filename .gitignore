@@ -491,3 +491,7 @@ $RECYCLE.BIN/
 /playwright/.auth/
 /user.json
 .azure
+/src/eShop.AppHost/aspirate-*
+/src/eShop.AppHost/manifest.json
+/k3d-grafana/.certs
+/k3d-grafana/.volume

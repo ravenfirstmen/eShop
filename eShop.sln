@@ -9,8 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		Directory.Packages.props = Directory.Packages.props
-		NuGet.config = NuGet.config
+		nuget.config = nuget.config
 		README.md = README.md
+		.gitignore = .gitignore
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A857AD10-40FF-4303-BEC2-FF1C58D5735E}"
@@ -64,6 +65,29 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientApp", "src\ClientApp\ClientApp.csproj", "{938803BB-4F6F-4108-BDD1-2AD0180BBDC1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientApp.UnitTests", "tests\ClientApp.UnitTests\ClientApp.UnitTests.csproj", "{02878FFB-F4DA-4996-B4A6-308851A837C6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "K3d-grafana", "K3d-grafana", "{7C62FE03-D9CB-4039-A17F-ADF0A8986EB7}"
+	ProjectSection(SolutionItems) = preProject
+		k3d-grafana\start-cluster.sh = k3d-grafana\start-cluster.sh
+		k3d-grafana\stop-cluster.sh = k3d-grafana\stop-cluster.sh
+		k3d-grafana\README.md = k3d-grafana\README.md
+		k3d-grafana\prepare.sh = k3d-grafana\prepare.sh
+		k3d-grafana\apply.sh = k3d-grafana\apply.sh
+		k3d-grafana\destroy.sh = k3d-grafana\destroy.sh
+		k3d-grafana\cluster-config.yaml = k3d-grafana\cluster-config.yaml
+		k3d-grafana\registry-config.yaml = k3d-grafana\registry-config.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "manifests", "manifests", "{C8313F9A-5AAB-458D-9EF6-BDD17D53505A}"
+	ProjectSection(SolutionItems) = preProject
+		k3d-grafana\manifests\00-volumes.yaml = k3d-grafana\manifests\00-volumes.yaml
+		k3d-grafana\manifests\open-telemetry-collector-helm.yaml = k3d-grafana\manifests\open-telemetry-collector-helm.yaml
+		k3d-grafana\manifests\grafana-helm.yaml = k3d-grafana\manifests\grafana-helm.yaml
+		k3d-grafana\manifests\netshoot.yaml = k3d-grafana\manifests\netshoot.yaml
+		k3d-grafana\manifests\fluent-bit-helm.yaml = k3d-grafana\manifests\fluent-bit-helm.yaml
+		k3d-grafana\manifests\postgres.yaml.skip = k3d-grafana\manifests\postgres.yaml.skip
+		k3d-grafana\manifests\prometheus-helm.yaml = k3d-grafana\manifests\prometheus-helm.yaml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -205,6 +229,8 @@ Global
 		{66275483-5364-42F9-B7E6-410E6A1B5ECF} = {932D8224-11F6-4D07-B109-DA28AD288A63}
 		{938803BB-4F6F-4108-BDD1-2AD0180BBDC1} = {932D8224-11F6-4D07-B109-DA28AD288A63}
 		{02878FFB-F4DA-4996-B4A6-308851A837C6} = {A857AD10-40FF-4303-BEC2-FF1C58D5735E}
+		{7C62FE03-D9CB-4039-A17F-ADF0A8986EB7} = {3AF739CD-81D8-428D-A08A-0A58372DEBF6}
+		{C8313F9A-5AAB-458D-9EF6-BDD17D53505A} = {7C62FE03-D9CB-4039-A17F-ADF0A8986EB7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {25728519-5F0F-4973-8A64-0A81EB4EA8D9}

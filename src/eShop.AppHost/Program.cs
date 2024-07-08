@@ -1,8 +1,10 @@
 ﻿using eShop.AppHost;
 using Microsoft.Extensions.Configuration;
 
-var builder = DistributedApplication.CreateBuilder(args);
+const string OTEL_EXPORTER_OTLP_ENDPOINT = "http://opentelemetry-collector.monitoring.svc.cluster.local:4319"; 
+const string OTEL_EXPORTER_OTLP_PROTOCOL = "grpc"; 
 
+var builder = DistributedApplication.CreateBuilder(args);
 builder.AddForwardedHeaders();
 
 var redis = builder.AddRedis("redis");
@@ -28,40 +30,64 @@ var identityEndpoint = identityApi.GetEndpoint(launchProfileName);
 var basketApi = builder.AddProject<Projects.Basket_API>("basket-api")
     .WithReference(redis)
     .WithReference(rabbitMq)
-    .WithEnvironment("Identity__Url", identityEndpoint);
+    .WithEnvironment("Identity__Url", identityEndpoint)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_ENDPOINT", OTEL_EXPORTER_OTLP_ENDPOINT)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", OTEL_EXPORTER_OTLP_PROTOCOL);
+    
 
 var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api")
     .WithReference(rabbitMq)
-    .WithReference(catalogDb);
+    .WithReference(catalogDb)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_ENDPOINT", OTEL_EXPORTER_OTLP_ENDPOINT)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", OTEL_EXPORTER_OTLP_PROTOCOL);
+    
 
 var orderingApi = builder.AddProject<Projects.Ordering_API>("ordering-api")
     .WithReference(rabbitMq)
     .WithReference(orderDb)
-    .WithEnvironment("Identity__Url", identityEndpoint);
+    .WithEnvironment("Identity__Url", identityEndpoint)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_ENDPOINT", OTEL_EXPORTER_OTLP_ENDPOINT)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", OTEL_EXPORTER_OTLP_PROTOCOL);
+    
 
 builder.AddProject<Projects.OrderProcessor>("order-processor")
     .WithReference(rabbitMq)
-    .WithReference(orderDb);
+    .WithReference(orderDb)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_ENDPOINT", OTEL_EXPORTER_OTLP_ENDPOINT)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", OTEL_EXPORTER_OTLP_PROTOCOL);
+    
 
 builder.AddProject<Projects.PaymentProcessor>("payment-processor")
-    .WithReference(rabbitMq);
+    .WithReference(rabbitMq)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_ENDPOINT", OTEL_EXPORTER_OTLP_ENDPOINT)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", OTEL_EXPORTER_OTLP_PROTOCOL);
+    
 
 var webHooksApi = builder.AddProject<Projects.Webhooks_API>("webhooks-api")
     .WithReference(rabbitMq)
     .WithReference(webhooksDb)
-    .WithEnvironment("Identity__Url", identityEndpoint);
+    .WithEnvironment("Identity__Url", identityEndpoint)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_ENDPOINT", OTEL_EXPORTER_OTLP_ENDPOINT)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", OTEL_EXPORTER_OTLP_PROTOCOL);
+    
 
 // Reverse proxies
 builder.AddProject<Projects.Mobile_Bff_Shopping>("mobile-bff")
     .WithReference(catalogApi)
     .WithReference(orderingApi)
     .WithReference(basketApi)
-    .WithReference(identityApi);
+    .WithReference(identityApi)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_ENDPOINT", OTEL_EXPORTER_OTLP_ENDPOINT)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", OTEL_EXPORTER_OTLP_PROTOCOL);
+    
 
 // Apps
 var webhooksClient = builder.AddProject<Projects.WebhookClient>("webhooksclient", launchProfileName)
     .WithReference(webHooksApi)
-    .WithEnvironment("IdentityUrl", identityEndpoint);
+    .WithEnvironment("IdentityUrl", identityEndpoint)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_ENDPOINT", OTEL_EXPORTER_OTLP_ENDPOINT)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", OTEL_EXPORTER_OTLP_PROTOCOL);
+    
 
 var webApp = builder.AddProject<Projects.WebApp>("webapp", launchProfileName)
     .WithExternalHttpEndpoints()
@@ -69,7 +95,10 @@ var webApp = builder.AddProject<Projects.WebApp>("webapp", launchProfileName)
     .WithReference(catalogApi)
     .WithReference(orderingApi)
     .WithReference(rabbitMq)
-    .WithEnvironment("IdentityUrl", identityEndpoint);
+    .WithEnvironment("IdentityUrl", identityEndpoint)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_ENDPOINT", OTEL_EXPORTER_OTLP_ENDPOINT)
+    .WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", OTEL_EXPORTER_OTLP_PROTOCOL);
+    
 
 // set to true if you want to use OpenAI
 bool useOpenAI = false;

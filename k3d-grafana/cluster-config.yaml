@@ -1,0 +1,100 @@
+# k3d configuration file: https://k3d.io/v5.6.3/usage/configfile/
+
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: eshop
+servers: 1
+agents: 3
+
+kubeAPI:
+  hostPort: "6443"
+
+image: rancher/k3s:v1.29.3-k3s1
+
+volumes:
+  - volume: ${PWD}/manifests:/var/lib/rancher/k3s/server/manifests/custom
+    nodeFilters:
+      - server:*
+  - volume: ${PWD}/.volume/machine-id:/etc/machine-id
+    nodeFilters:
+      - server:*
+      - agent:*
+  - volume: ${PWD}/.certs/k3d-registry-ca.crt:/etc/ssl/certs/k3d-registry-ca.crt
+    nodeFilters:
+      - server:*
+      - agent:*
+    
+ports:
+  - port: 9090:9090
+    nodeFilters:
+      - loadbalancer
+  - port: 3000:3000
+    nodeFilters:
+      - loadbalancer
+  - port: 3100:3100
+    nodeFilters:
+      - loadbalancer
+  - port: 4318:4318
+    nodeFilters:
+      - loadbalancer
+  - port: 5432:5432
+    nodeFilters:
+      - loadbalancer
+  - port: 8080:8080
+    nodeFilters:
+      - loadbalancer
+
+options:
+  k3s: # options passed on to K3s itself
+    extraArgs: # same as `--k3s-arg`
+      - arg: "--disable=metrics-server"
+        nodeFilters:
+          - server:*
+      - arg: "--kube-proxy-arg=conntrack-max-per-core=0"
+        nodeFilters:
+          - server:*
+          - agent:*
+
+    nodeLabels: # same as `--k3s-node-label'
+      - label: label/nodegroup=control
+        nodeFilters:
+          - server:*
+      - label: label/nodegroup=workers
+        nodeFilters:
+          - agent:*
+
+  # ===================================
+
+  k3d: # k3d runtime settings
+    wait: true
+    timeout: "60s"
+    disableLoadbalancer: false # same as `--no-lb`
+    disableImageVolume: false # same as `--no-image-volume`
+    disableRollback: false # same as `--no-Rollback`
+    loadbalancer:
+      configOverrides:
+        - settings.workerConnections=2048
+
+  kubeconfig:
+    updateDefaultKubeconfig: true
+    switchCurrentContext: true
+      
+registries:
+  config: |
+    mirrors:
+      "k3d-registry.localhost:5443":
+        endpoint:
+          - https://k3d-registry.localhost:5443
+    configs:
+      "k3d-registry.localhost:5443":
+        tls:
+          ca_file: "/etc/ssl/certs/k3d-registry-ca.crt"
+          insecure_skip_verify: True   
+    
+  # create:
+  #   name: k3d-registry.localhost
+  #   host: "0.0.0.0"
+  #   hostPort: "5000"
+  #   volumes:
+  #     - /tmp:/var/lib/registry # persist registry data locally
